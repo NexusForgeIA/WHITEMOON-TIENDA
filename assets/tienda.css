@@ -17,7 +17,7 @@
 .modelos-fig figcaption{margin-top:8px;font-size:.75rem;color:var(--muted)}
 
 /* Rejilla */
-.rejilla{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.rejilla{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 .prenda{background:var(--card);border:1px solid var(--border-soft);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
 
 /* Galería: scroll-snap, sin librerías */
@@ -65,7 +65,7 @@
 /* Estados */
 .estado{padding:8px 0 24px}
 .estado[hidden]{display:none}
-.skeleton{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
+.skeleton{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 .skeleton span{display:block;aspect-ratio:4/6;border-radius:18px;background:linear-gradient(100deg,var(--card) 40%,var(--card2) 50%,var(--card) 60%) 0 0/200% 100%;animation:brillo 1.4s linear infinite}
 @keyframes brillo{to{background-position:-200% 0}}
 .mensaje{text-align:center;padding:56px 20px;border:1px dashed var(--border);border-radius:18px;background:var(--bg2)}
