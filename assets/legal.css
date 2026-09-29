@@ -1,0 +1,9 @@
+.legal{max-width:760px;padding-top:48px}
+.legal h1{font-size:clamp(1.9rem,4.5vw,2.6rem);font-weight:700;letter-spacing:-.02em}
+.legal .actualizado{color:var(--muted);font-size:.85rem;margin:8px 0 32px}
+.legal h2{font-size:1.15rem;font-weight:600;margin:32px 0 10px}
+.legal p,.legal li{color:#c9c9d6;max-width:68ch;text-wrap:pretty}
+.legal p+p{margin-top:10px}
+.legal ul{margin:10px 0 10px 1.2em;display:grid;gap:6px}
+.legal strong{color:var(--text)}
+@media (max-width:600px){.legal{padding-top:32px}}

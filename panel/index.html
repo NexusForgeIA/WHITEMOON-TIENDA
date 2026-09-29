@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' blob: data: https://mlaqtniujnvfxcvcourm.supabase.co; font-src 'self'; connect-src https://mlaqtniujnvfxcvcourm.supabase.co wss://mlaqtniujnvfxcvcourm.supabase.co; base-uri 'self'; form-action 'self'; object-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel · Tienda WhiteMoon</title>
+<meta name="theme-color" content="#08080d">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
+<link rel="preload" href="../assets/fonts/sora-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/base.css">
+<link rel="stylesheet" href="../assets/panel.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="../" aria-label="Ver la tienda">
+      <img src="../assets/img/logo.webp" width="180" height="82" alt="WhiteMoon">
+      <span>Panel de la tienda</span>
+    </a>
+    <div class="top-acciones">
+      <a class="top-link" href="../" target="_blank" rel="noopener">Ver tienda <span aria-hidden="true">↗</span></a>
+      <button id="salir" class="btn btn-ghost btn-sm" type="button" hidden>Cerrar sesión</button>
+    </div>
+  </div>
+</header>
+
+<main id="main" class="wrap panel">
+
+  <!-- Login -->
+  <section id="v-login" class="vista login" hidden aria-labelledby="t-login">
+    <h1 id="t-login">Entrar al panel</h1>
+    <form id="f-login" novalidate>
+      <label class="campo">
+        <span>Email</span>
+        <input id="l-email" type="email" name="email" autocomplete="username" required inputmode="email" autocapitalize="off" spellcheck="false">
+      </label>
+      <label class="campo">
+        <span>Contraseña</span>
+        <input id="l-pass" type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn btn-p btn-block" type="submit">Entrar</button>
+      <p id="l-msg" class="msg" role="alert"></p>
+    </form>
+  </section>
+
+  <!-- Lista -->
+  <section id="v-lista" class="vista" hidden aria-labelledby="t-lista">
+    <div class="cabecera">
+      <h1 id="t-lista">Prendas</h1>
+      <button id="nueva" class="btn btn-p" type="button">+ Nueva prenda</button>
+    </div>
+    <p id="lista-estado" class="estado-lista" role="status"></p>
+    <ul id="lista" class="lista"></ul>
+  </section>
+
+  <!-- Formulario -->
+  <section id="v-form" class="vista" hidden aria-labelledby="t-form">
+    <div class="cabecera">
+      <h1 id="t-form">Nueva prenda</h1>
+      <button id="volver" class="btn btn-ghost" type="button">← Volver</button>
+    </div>
+    <form id="f-prenda" novalidate>
+      <label class="campo">
+        <span>Nombre</span>
+        <input id="p-nombre" type="text" maxlength="120" required>
+      </label>
+      <label class="campo">
+        <span>Descripción</span>
+        <textarea id="p-desc" rows="3" maxlength="1000"></textarea>
+      </label>
+      <label class="campo campo-precio">
+        <span>Precio final con IVA (€)</span>
+        <input id="p-precio" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" required aria-describedby="p-precio-ayuda">
+        <small id="p-precio-ayuda">Precio que paga el cliente.</small>
+      </label>
+
+      <fieldset class="grupo">
+        <legend>Colores</legend>
+        <div id="p-colores" class="checks"></div>
+        <div class="anadir">
+          <label class="sr-only" for="p-color-otro">Otro color</label>
+          <input id="p-color-otro" type="text" maxlength="30" placeholder="Otro color (p. ej. Gris)">
+          <button id="p-color-add" class="btn btn-ghost" type="button">Añadir</button>
+        </div>
+      </fieldset>
+
+      <fieldset class="grupo">
+        <legend>Tallas</legend>
+        <div id="p-tallas" class="checks"></div>
+      </fieldset>
+
+      <label class="check-ia">
+        <input id="p-ia" type="checkbox">
+        <span>Las fotos llevan modelos generados con IA</span>
+      </label>
+
+      <fieldset class="grupo">
+        <legend>Fotos</legend>
+        <p class="ayuda">Se reducen a 1600 px y se convierten a WebP antes de subir. La primera es la portada.</p>
+        <ul id="p-fotos" class="fotos"></ul>
+        <label class="btn btn-ghost subir">
+          <input id="p-fotos-input" type="file" accept="image/*" multiple>
+          <span>Añadir fotos</span>
+        </label>
+        <p id="p-fotos-msg" class="msg" role="status"></p>
+      </fieldset>
+
+      <p id="p-oculta" class="ayuda">La prenda nueva se guarda <strong>oculta</strong>. La haces visible desde la lista.</p>
+      <div class="acciones-form">
+        <button id="p-guardar" class="btn btn-p" type="submit">Guardar</button>
+        <button id="p-cancelar" class="btn btn-ghost" type="button">Cancelar</button>
+      </div>
+      <p id="p-msg" class="msg" role="alert"></p>
+    </form>
+  </section>
+</main>
+
+<div id="aviso" class="toast" role="status" aria-live="polite" hidden></div>
+
+<template id="tpl-fila">
+  <li class="fila">
+    <div class="miniatura"></div>
+    <div class="datos">
+      <p class="f-nombre"></p>
+      <p class="f-meta"><span class="f-precio"></span><span class="f-estado"></span><span class="f-orden"></span></p>
+    </div>
+    <div class="f-acciones">
+      <button class="btn btn-ghost btn-sm a-editar" type="button">Editar</button>
+      <button class="btn btn-ghost btn-sm a-visible" type="button"></button>
+      <button class="btn btn-ghost btn-sm btn-ico a-subir" type="button">↑</button>
+      <button class="btn btn-ghost btn-sm btn-ico a-bajar" type="button">↓</button>
+      <button class="btn btn-danger btn-sm a-borrar" type="button">Borrar</button>
+    </div>
+    <div class="f-confirmar" hidden>
+      <p></p>
+      <div>
+        <button class="btn btn-danger btn-sm c-si" type="button">Sí, borrar</button>
+        <button class="btn btn-ghost btn-sm c-no" type="button">Cancelar</button>
+      </div>
+    </div>
+  </li>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0/dist/umd/supabase.js" integrity="sha384-iLddHTLokph6Omwoyid4XKxHaWa6w41BnoEj0q5oOrzmYPpHIKt1wyjReA7s//pP" crossorigin="anonymous"></script>
+<script src="../assets/config.js"></script>
+<script src="../assets/panel.js"></script>
+</body>
+</html>

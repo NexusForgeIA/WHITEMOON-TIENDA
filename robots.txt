@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tienda.whitemoon.es/sitemap.xml
+# LLMs: https://tienda.whitemoon.es/llms.txt

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://mlaqtniujnvfxcvcourm.supabase.co; font-src 'self'; connect-src 'self' https://mlaqtniujnvfxcvcourm.supabase.co; base-uri 'self'; form-action 'none'; object-src 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Merch WhiteMoon · Camisetas oficiales · WhiteMoon</title>
+<meta name="description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp. Precio final con IVA incluido y 14 días para devolverla.">
+<link rel="canonical" href="https://tienda.whitemoon.es/">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#08080d">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_ES">
+<meta property="og:site_name" content="WhiteMoon">
+<meta property="og:title" content="Merch WhiteMoon · Camisetas oficiales">
+<meta property="og:description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
+<meta property="og:url" content="https://tienda.whitemoon.es/">
+<meta property="og:image" content="https://tienda.whitemoon.es/assets/img/og-tienda.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Merch WhiteMoon · Camisetas oficiales">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Merch WhiteMoon · Camisetas oficiales">
+<meta name="twitter:description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
+<meta name="twitter:image" content="https://tienda.whitemoon.es/assets/img/og-tienda.jpg">
+
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/sora-latin-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://mlaqtniujnvfxcvcourm.supabase.co" crossorigin>
+<link rel="stylesheet" href="assets/base.css">
+<link rel="stylesheet" href="assets/tienda.css">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://whitemoon.es/#organization",
+  "name": "WhiteMoon",
+  "url": "https://whitemoon.es/",
+  "logo": "https://whitemoon.es/logo.png",
+  "email": "comercial@whitemoon.es",
+  "telephone": "+34643199580",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Majadahonda",
+    "addressRegion": "Madrid",
+    "addressCountry": "ES"
+  }
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#catalogo">Saltar al catálogo</a>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="https://whitemoon.es/" aria-label="WhiteMoon, ir a whitemoon.es">
+      <img src="assets/img/logo.webp" width="180" height="82" alt="WhiteMoon">
+      <span>Tienda</span>
+    </a>
+    <a class="top-link" href="https://whitemoon.es/">whitemoon.es <span aria-hidden="true">↗</span></a>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <h1>Merch WhiteMoon</h1>
+      <p>Camisetas oficiales. Eliges color y talla, nos la pides por WhatsApp y te la enviamos a casa.</p>
+    </div>
+  </section>
+
+  <section id="catalogo" class="wrap" aria-labelledby="catalogo-titulo">
+    <h2 id="catalogo-titulo" class="sr-only">Prendas disponibles</h2>
+
+    <div id="estado" class="estado" role="status" aria-live="polite">
+      <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+      <p class="sr-only">Cargando prendas…</p>
+    </div>
+
+    <ul id="rejilla" class="rejilla" hidden></ul>
+
+    <p class="envio">
+      Envío <span data-cfg="envio"></span> · <span data-cfg="plazo"></span> · <span data-cfg="devolucion"></span> días para devolverla.
+      <a href="condiciones/">Condiciones de venta</a>
+    </p>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <nav aria-label="Legal">
+      <a href="https://whitemoon.es/aviso-legal/">Aviso legal</a>
+      <a href="https://whitemoon.es/politica-privacidad/">Privacidad</a>
+      <a href="https://whitemoon.es/politica-cookies/">Cookies</a>
+      <a href="condiciones/">Condiciones de venta</a>
+    </nav>
+    <p>© <span id="anio">2026</span> WhiteMoon</p>
+  </div>
+</footer>
+
+<template id="tpl-prenda">
+  <li class="prenda">
+    <div class="galeria">
+      <div class="pista" tabindex="0"></div>
+      <button class="flecha ant" type="button" aria-label="Foto anterior" hidden>‹</button>
+      <button class="flecha sig" type="button" aria-label="Foto siguiente" hidden>›</button>
+      <div class="puntos" hidden></div>
+      <p class="ia" hidden>Modelos generados con IA · la prenda es real</p>
+    </div>
+    <div class="cuerpo">
+      <h3 class="nombre"></h3>
+      <p class="desc"></p>
+      <p class="precio"><strong></strong> <span>IVA incluido</span></p>
+      <fieldset class="opciones op-color" hidden><legend>Color</legend><div class="chips"></div></fieldset>
+      <fieldset class="opciones op-talla" hidden><legend>Talla</legend><div class="chips"></div></fieldset>
+      <a class="btn btn-wa" role="button" aria-disabled="true" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+      <p class="aviso-sel" aria-live="polite"></p>
+    </div>
+  </li>
+</template>
+
+<script src="assets/config.js"></script>
+<script src="assets/tienda.js" defer></script>
+</body>
+</html>
