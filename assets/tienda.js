@@ -145,7 +145,7 @@
     fotos.forEach(function (ruta, i) {
       var img = document.createElement('img');
       img.src = window.WM_fotoUrl(ruta);
-      img.width = 800; img.height = 1000;
+      img.width = 1000; img.height = 1000;
       img.alt = nombre + (fotos.length > 1 ? ' · foto ' + (i + 1) + ' de ' + fotos.length : '');
       img.decoding = 'async';
       if (!(prioritaria && i === 0)) img.loading = 'lazy'; // la prioridad alta es solo para la imagen de portada
