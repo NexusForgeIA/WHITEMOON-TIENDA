@@ -11,6 +11,11 @@
 .hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:700;letter-spacing:-.03em}
 .hero p{margin-top:14px;max-width:52ch;color:var(--muted);font-size:1.05rem}
 
+/* Foto de modelos */
+.modelos{margin-bottom:32px}
+.modelos-fig img{display:block;width:100%;height:auto;border-radius:14px}
+.modelos-fig figcaption{margin-top:8px;font-size:.75rem;color:var(--muted)}
+
 /* Rejilla */
 .rejilla{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:28px}
 .prenda{background:var(--card);border:1px solid var(--border-soft);border-radius:18px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
