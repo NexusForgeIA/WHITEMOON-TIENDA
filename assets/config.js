@@ -11,6 +11,7 @@ window.WM_CONFIG = Object.freeze({
   whatsappVisible: '643 199 580',
   email: 'comercial@whitemoon.es',
   envioEur: 4.95,
+  envioZona: 'España peninsular',
   plazo: '5-7 días laborables',
   devolucionDias: 14
 });
@@ -32,6 +33,7 @@ window.WM_CONFIG = Object.freeze({
     var valores = {
       envio: window.WM_formatEur(C.envioEur) + ' €',
       plazo: C.plazo,
+      zona: C.envioZona,
       devolucion: String(C.devolucionDias),
       email: C.email,
       whatsapp: C.whatsappVisible

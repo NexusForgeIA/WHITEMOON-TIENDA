@@ -7,3 +7,8 @@
 .legal ul{margin:10px 0 10px 1.2em;display:grid;gap:6px}
 .legal strong{color:var(--text)}
 @media (max-width:600px){.legal{padding-top:32px}}
+.legal h3{font-size:1rem;font-weight:600;margin:26px 0 10px}
+.legal .formulario{padding:18px 20px;border-radius:12px;border:1px solid var(--border-soft);background:var(--bg2)}
+.legal .formulario p{font-size:.92rem}
+.legal .formulario p+p{margin-top:6px}
+.legal [id]{scroll-margin-top:84px}
