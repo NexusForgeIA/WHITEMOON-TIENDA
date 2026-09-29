@@ -54,6 +54,8 @@ input::placeholder,textarea::placeholder{color:#7a7a92}
 .campo-cat select:focus{outline:none;border-color:var(--p2)}
 
 /* Formulario */
+.contador{align-self:flex-end;font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.contador.limite{color:var(--danger)}
 #f-prenda{max-width:720px}
 .grupo{border:1px solid var(--border-soft);border-radius:14px;padding:16px;margin-bottom:18px;min-width:0}
 .grupo legend{padding:0 6px}

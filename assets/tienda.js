@@ -144,6 +144,10 @@
     var tab = $tabs.filter(function (t) { return t.dataset.cat === cat; })[0];
     $tabs.forEach(function (t) { var on = t === tab; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
     $panel.setAttribute('aria-labelledby', tab.id);
+    // Enlace directo (#camisetas / #sudaderas): además de activar la pestaña, baja al catálogo.
+    if (catDeHash()) requestAnimationFrame(function () {
+      document.getElementById('catalogo').scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' });
+    });
   })();
 
   function tarjeta(p, idx) {
