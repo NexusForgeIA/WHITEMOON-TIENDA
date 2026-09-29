@@ -148,7 +148,7 @@
       img.width = 800; img.height = 1000;
       img.alt = nombre + (fotos.length > 1 ? ' · foto ' + (i + 1) + ' de ' + fotos.length : '');
       img.decoding = 'async';
-      if (prioritaria && i === 0) img.fetchPriority = 'high'; else img.loading = 'lazy';
+      if (!(prioritaria && i === 0)) img.loading = 'lazy'; // la prioridad alta es solo para la imagen de portada
       pista.appendChild(img);
     });
     if (fotos.length < 2) { pista.removeAttribute('tabindex'); return; }
