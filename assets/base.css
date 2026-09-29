@@ -29,9 +29,10 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 
 /* Cabecera */
 .top{position:sticky;top:0;z-index:var(--z-sticky);background:rgba(8,8,13,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft)}
-.top .wrap{height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.top .wrap{height:76px;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--text)}
-.brand img{height:44px;width:auto}
+.brand picture{display:block}
+.brand img{height:60px;width:auto}
 .brand span{font-size:.8rem;color:var(--muted);border-left:1px solid var(--border-soft);padding-left:12px;letter-spacing:.02em}
 .top-link{font-size:.88rem;text-decoration:none;color:var(--muted);display:inline-flex;align-items:center;gap:6px;padding:8px 0}
 .top-link:hover{color:var(--text)}
@@ -57,7 +58,8 @@ h1,h2,h3{line-height:1.15;text-wrap:balance}
 @media (max-width:900px){.wrap{padding:0 22px}}
 @media (max-width:600px){
   .wrap{padding:0 16px}
-  .brand img{height:38px}
+  .top .wrap{height:62px}
+  .brand img{height:44px}
   .brand span{display:none}
   .foot .wrap{flex-direction:column;align-items:flex-start}
 }

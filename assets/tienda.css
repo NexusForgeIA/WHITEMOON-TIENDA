@@ -1,5 +1,9 @@
 /* Hero */
-.hero{padding:64px 0 40px;position:relative;isolation:isolate}
+.hero{padding:40px 0 32px;position:relative;isolation:isolate}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,400px);align-items:center;gap:32px 48px}
+.hero-fig{justify-self:end;width:100%;max-width:400px}
+.hero-fig img{width:100%;height:auto;aspect-ratio:1;-webkit-mask-image:radial-gradient(closest-side,#000 72%,transparent 100%);mask-image:radial-gradient(closest-side,#000 72%,transparent 100%)}
+.hero-fig figcaption{margin-top:8px;font-size:.75rem;color:var(--muted);text-align:right}
 .hero::before{content:"";position:absolute;inset:-40px 0 auto 0;height:360px;background:radial-gradient(600px 260px at 18% 30%,rgba(124,77,255,.20),transparent 70%);z-index:-1;pointer-events:none}
 .hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:700;letter-spacing:-.03em}
 .hero p{margin-top:14px;max-width:52ch;color:var(--muted);font-size:1.05rem}
@@ -63,9 +67,11 @@
 .envio{margin-top:32px;padding:18px 20px;border-radius:14px;background:var(--bg2);border:1px solid var(--border-soft);color:var(--muted);font-size:.92rem}
 .envio a{margin-left:4px;white-space:nowrap}
 
-@media (max-width:900px){.hero{padding:48px 0 32px}.rejilla,.skeleton{gap:20px}}
+@media (max-width:900px){.hero{padding:32px 0 28px}.hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,300px);gap:24px 28px}.rejilla,.skeleton{gap:20px}}
 @media (max-width:600px){
-  .hero{padding:36px 0 24px}
+  .hero{padding:28px 0 20px}
+  .hero-grid{grid-template-columns:1fr}
+  .hero-fig{max-width:260px}
   .rejilla,.skeleton{grid-template-columns:1fr}
   .skeleton span:nth-child(n+2){display:none}
   .cuerpo{padding:18px 16px 20px}

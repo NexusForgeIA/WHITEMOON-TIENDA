@@ -60,7 +60,10 @@
 <header class="top">
   <div class="wrap">
     <a class="brand" href="https://whitemoon.es/" aria-label="WhiteMoon, ir a whitemoon.es">
-      <img src="assets/img/logo.webp" width="180" height="82" alt="WhiteMoon">
+      <picture>
+        <source type="image/webp" srcset="assets/img/logo-wm.webp">
+        <img src="assets/img/logo-wm.png" width="86" height="120" alt="WhiteMoon">
+      </picture>
       <span>Tienda</span>
     </a>
     <a class="top-link" href="https://whitemoon.es/">whitemoon.es <span aria-hidden="true">↗</span></a>
@@ -69,9 +72,18 @@
 
 <main id="main">
   <section class="hero">
-    <div class="wrap">
-      <h1>Merch WhiteMoon</h1>
-      <p>Camisetas oficiales. Eliges color y talla, nos la pides por WhatsApp y te la enviamos a casa.</p>
+    <div class="wrap hero-grid">
+      <div class="hero-txt">
+        <h1>Merch WhiteMoon</h1>
+        <p>Camisetas oficiales. Eliges color y talla, nos la pides por WhatsApp y te la enviamos a casa.</p>
+      </div>
+      <figure class="hero-fig">
+        <picture>
+          <source type="image/webp" srcset="assets/img/hero-merch-480.webp 480w, assets/img/hero-merch-800.webp 800w" sizes="(max-width: 600px) 260px, (max-width: 900px) 300px, 400px">
+          <img src="assets/img/hero-merch-800.jpg" width="800" height="800" alt="Logo de WhiteMoon en relieve sobre tela negra" loading="eager" fetchpriority="high" decoding="async">
+        </picture>
+        <figcaption>Ilustración de marca</figcaption>
+      </figure>
     </div>
   </section>
 
