@@ -1,6 +1,6 @@
 # Merch WhiteMoon
 
-> Tienda oficial de camisetas de WhiteMoon (agencia de IA de Majadahonda, Madrid). Los pedidos se hacen por WhatsApp.
+> Tienda oficial de camisetas y sudaderas de WhiteMoon (agencia de IA de Majadahonda, Madrid). Los pedidos se hacen por WhatsApp.
 
 - Tienda: https://tienda.whitemoon.es/
 - Condiciones de venta: https://tienda.whitemoon.es/condiciones/

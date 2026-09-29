@@ -7,6 +7,7 @@
   var T = C.tabla, B = C.bucket;
   var COLORES_BASE = ['Blanco', 'Negro'];
   var TALLAS_BASE = ['S', 'M', 'L', 'XL'];
+  var CATEGORIAS = { camiseta: 'Camiseta', sudadera: 'Sudadera' };
   var MAX_LADO = 1600, CALIDAD = 0.85, MAX_BYTES = 5 * 1024 * 1024;
 
   var $ = function (id) { return document.getElementById(id); };
@@ -23,6 +24,7 @@
   });
 
   var prendas = [];
+  var filtroCat = '';   // '' = todas
   var edicion = null; // { id, nueva, fotos:[{ruta}|{blob,url}], quitadas:[], coloresExtra:[] }
 
   /* ───────── Utilidades ───────── */
@@ -131,8 +133,13 @@
   function pintarLista() {
     var ul = $('lista'), tpl = $('tpl-fila');
     var frag = document.createDocumentFragment();
-    prendas.forEach(function (p, i) {
+    var vista = filtroCat ? prendas.filter(function (p) { return catDe(p) === filtroCat; }) : prendas;
+    if (prendas.length && !vista.length) $('lista-estado').textContent = 'No hay prendas en esta categoría.';
+    else if (prendas.length) $('lista-estado').textContent = '';
+    vista.forEach(function (p) {
       var li = tpl.content.firstElementChild.cloneNode(true);
+      var mismaCat = prendas.filter(function (q) { return catDe(q) === catDe(p); });
+      var i = mismaCat.indexOf(p);
       li.classList.toggle('oculta', !p.activo);
       var mini = li.querySelector('.miniatura');
       if (p.fotos && p.fotos.length) {
@@ -140,6 +147,7 @@
         mini.appendChild(img);
       } else mini.textContent = 'Sin foto';
       li.querySelector('.f-nombre').textContent = p.nombre;
+      li.querySelector('.f-cat').textContent = CATEGORIAS[catDe(p)];
       li.querySelector('.f-precio').textContent = window.WM_formatEur(p.precio_eur) + ' €';
       var est = li.querySelector('.f-estado');
       est.textContent = p.activo ? 'Visible' : 'Oculta'; est.classList.toggle('on', p.activo);
@@ -149,12 +157,12 @@
       bVis.textContent = p.activo ? 'Ocultar' : 'Mostrar';
       var bSub = li.querySelector('.a-subir'), bBaj = li.querySelector('.a-bajar');
       bSub.setAttribute('aria-label', 'Subir ' + p.nombre); bBaj.setAttribute('aria-label', 'Bajar ' + p.nombre);
-      bSub.disabled = i === 0; bBaj.disabled = i === prendas.length - 1;
+      bSub.disabled = i === 0; bBaj.disabled = i === mismaCat.length - 1;   // se ordena dentro de su categoría
 
       li.querySelector('.a-editar').addEventListener('click', function () { abrirForm(p); });
       bVis.addEventListener('click', function () { accion(li, cambiarVisible(p)); });
-      bSub.addEventListener('click', function () { accion(li, mover(i, -1)); });
-      bBaj.addEventListener('click', function () { accion(li, mover(i, 1)); });
+      bSub.addEventListener('click', function () { accion(li, mover(p, -1)); });
+      bBaj.addEventListener('click', function () { accion(li, mover(p, 1)); });
 
       var acc = li.querySelector('.f-acciones'), conf = li.querySelector('.f-confirmar');
       conf.querySelector('p').textContent = '¿Borrar «' + p.nombre + '»? Se borran también sus fotos. No se puede deshacer.';
@@ -183,10 +191,15 @@
   }
 
   /* Reordena y renumera (10, 20, 30…) para que no haya empates. */
-  async function mover(i, dir) {
-    var j = i + dir;
-    if (j < 0 || j >= prendas.length) return;
+  function catDe(p) { return p.categoria || 'camiseta'; }
+
+  /* Intercambia la prenda con la vecina más cercana de SU categoría y renumera todo (10, 20, 30…).
+     La tienda ordena por "orden" y filtra por categoría, así que solo importa el orden relativo. */
+  async function mover(p, dir) {
     var arr = prendas.slice();
+    var i = arr.indexOf(p), j = i + dir;
+    while (j >= 0 && j < arr.length && catDe(arr[j]) !== catDe(p)) j += dir;
+    if (i < 0 || j < 0 || j >= arr.length) return;
     var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
     var cambios = [];
     arr.forEach(function (p, k) {
@@ -211,6 +224,14 @@
 
   $('nueva').addEventListener('click', function () { abrirForm(null); });
 
+  document.querySelectorAll('.filtro-cat button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      filtroCat = b.getAttribute('data-f');
+      document.querySelectorAll('.filtro-cat button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      pintarLista();
+    });
+  });
+
   /* ───────── Formulario ───────── */
   function abrirForm(p) {
     liberarBlobs();
@@ -228,6 +249,7 @@
     $('p-desc').value = nueva ? '' : (p.descripcion || '');
     $('p-precio').value = nueva ? '' : window.WM_formatEur(p.precio_eur).replace(/\./g, '');
     $('p-ia').checked = nueva ? false : !!p.fotos_ia;
+    $('p-categoria').value = nueva ? 'camiseta' : catDe(p);
     $('p-msg').textContent = ''; $('p-fotos-msg').textContent = '';
 
     var colores = nueva ? [] : (p.colores || []);
@@ -374,6 +396,8 @@
     var precio = parsePrecio($('p-precio').value);
     if (!nombre) { msg.textContent = 'Falta el nombre.'; $('p-nombre').focus(); return; }
     if (!(precio > 0) || precio > 100000) { msg.textContent = 'Escribe un precio válido, por ejemplo 24,90.'; $('p-precio').focus(); return; }
+    var categoria = $('p-categoria').value;
+    if (!CATEGORIAS[categoria]) { msg.textContent = 'Elige la categoría.'; $('p-categoria').focus(); return; }
 
     var btn = $('p-guardar');
     btn.disabled = true; btn.textContent = 'Guardando…';
@@ -399,7 +423,8 @@
         colores: marcadosDe($('p-colores')),
         tallas: marcadosDe($('p-tallas')),
         fotos: rutas,
-        fotos_ia: $('p-ia').checked
+        fotos_ia: $('p-ia').checked,
+        categoria: categoria
       };
       if (edicion.nueva) {
         fila.id = id;

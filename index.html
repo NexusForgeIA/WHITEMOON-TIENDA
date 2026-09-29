@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://mlaqtniujnvfxcvcourm.supabase.co; font-src 'self'; connect-src 'self' https://mlaqtniujnvfxcvcourm.supabase.co; base-uri 'self'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<title>Merch WhiteMoon · Camisetas oficiales · WhiteMoon</title>
-<meta name="description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp. Precio final con IVA incluido y 14 días para devolverla.">
+<title>Merch WhiteMoon · Camisetas y sudaderas oficiales · WhiteMoon</title>
+<meta name="description" content="Camisetas y sudaderas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp. Precio final con IVA incluido y 14 días para devolverla.">
 <link rel="canonical" href="https://tienda.whitemoon.es/">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#08080d">
@@ -14,8 +14,8 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es_ES">
 <meta property="og:site_name" content="WhiteMoon">
-<meta property="og:title" content="Merch WhiteMoon · Camisetas oficiales">
-<meta property="og:description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
+<meta property="og:title" content="Merch WhiteMoon · Camisetas y sudaderas oficiales">
+<meta property="og:description" content="Camisetas y sudaderas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
 <meta property="og:url" content="https://tienda.whitemoon.es/">
 <meta property="og:image" content="https://tienda.whitemoon.es/assets/img/og-tienda.jpg">
 <meta property="og:image:type" content="image/jpeg">
@@ -23,8 +23,8 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Merch WhiteMoon · Camisetas oficiales">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Merch WhiteMoon · Camisetas oficiales">
-<meta name="twitter:description" content="Camisetas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
+<meta name="twitter:title" content="Merch WhiteMoon · Camisetas y sudaderas oficiales">
+<meta name="twitter:description" content="Camisetas y sudaderas oficiales de WhiteMoon. Elige color y talla y pídela por WhatsApp.">
 <meta name="twitter:image" content="https://tienda.whitemoon.es/assets/img/og-tienda.jpg">
 
 <link rel="icon" href="favicon.ico" sizes="any">
@@ -75,7 +75,7 @@
     <div class="wrap hero-grid">
       <div class="hero-txt">
         <h1>Merch WhiteMoon</h1>
-        <p>Camisetas oficiales. Eliges color y talla, nos la pides por WhatsApp y te la enviamos a casa.</p>
+        <p>Camisetas y sudaderas oficiales. Eliges color y talla, nos la pides por WhatsApp y te la enviamos a casa.</p>
         <figure class="hero-banda">
           <picture>
             <source type="image/webp" srcset="assets/img/camisetas-banda.webp">
@@ -107,12 +107,19 @@
   <section id="catalogo" class="wrap" aria-labelledby="catalogo-titulo">
     <h2 id="catalogo-titulo" class="sr-only">Prendas disponibles</h2>
 
-    <div id="estado" class="estado" role="status" aria-live="polite">
-      <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
-      <p class="sr-only">Cargando prendas…</p>
+    <div class="pestanas" role="tablist" aria-label="Categorías de prendas">
+      <button type="button" role="tab" id="tab-camiseta" data-cat="camiseta" data-hash="camisetas" aria-controls="panel-cat" aria-selected="true">Camisetas <span class="cuenta"></span></button>
+      <button type="button" role="tab" id="tab-sudadera" data-cat="sudadera" data-hash="sudaderas" aria-controls="panel-cat" aria-selected="false" tabindex="-1">Sudaderas <span class="cuenta"></span></button>
     </div>
 
-    <ul id="rejilla" class="rejilla" hidden></ul>
+    <div id="panel-cat" role="tabpanel" aria-labelledby="tab-camiseta">
+      <div id="estado" class="estado" role="status" aria-live="polite">
+        <div class="skeleton" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="sr-only">Cargando prendas…</p>
+      </div>
+
+      <ul id="rejilla" class="rejilla" hidden></ul>
+    </div>
 
     <p class="envio">
       Envío <span data-cfg="envio">4,95 €</span> · <span data-cfg="plazo">5-7 días laborables</span> · <span data-cfg="devolucion">14</span> días para devolverla.
