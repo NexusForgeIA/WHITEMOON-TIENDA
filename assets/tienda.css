@@ -17,6 +17,7 @@
 .modelos-fig figcaption{margin-top:8px;font-size:.75rem;color:var(--muted)}
 
 /* Pestañas de categoría */
+#catalogo{scroll-margin-top:96px}
 .pestanas{display:inline-flex;gap:4px;padding:4px;margin-bottom:24px;border:1px solid var(--border-soft);border-radius:14px;background:var(--bg2);max-width:100%}
 .pestanas [role="tab"]{min-height:44px;padding:0 18px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;font-size:.95rem;cursor:pointer;white-space:nowrap;transition:background-color .2s var(--ease),color .2s var(--ease)}
 .pestanas [role="tab"]:hover{color:var(--text)}

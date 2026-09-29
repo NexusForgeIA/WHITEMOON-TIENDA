@@ -45,17 +45,35 @@
     if (txt != null) e.textContent = txt;
     return e;
   }
+  /* Traduce los errores de Supabase a un mensaje claro. Nunca se enseña el error técnico. */
   function textoError(e) {
-    var m = (e && e.message) || String(e);
+    var m = (e && e.message) || String(e), code = e && e.code;
+    if (e && e.claro) return m;
     if (/JWT|expired|401/i.test(m)) return 'La sesión ha caducado. Vuelve a entrar.';
     if (/Failed to fetch|NetworkError|network/i.test(m)) return 'Sin conexión. Comprueba internet e inténtalo otra vez.';
-    return m;
+    if (code === '23514' || /check constraint/i.test(m)) {
+      if (/nombre_check/.test(m)) return 'El nombre tiene que tener entre 1 y 80 caracteres.';
+      if (/descripcion_check/.test(m)) return 'La descripción no puede pasar de 600 caracteres.';
+      if (/precio_eur_check/.test(m)) return 'El precio tiene que estar entre 0,01 € y 9.999,99 €.';
+      if (/categoria_check/.test(m)) return 'La categoría tiene que ser Camiseta o Sudadera.';
+      return 'Algún dato no es válido. Revisa el formulario.';
+    }
+    if (code === '42501' || /row-level security|permission denied/i.test(m)) return 'No tienes permiso para hacer este cambio. Entra con un usuario de staff.';
+    if (/maximum allowed size|too large|413/i.test(m)) return 'La foto pesa demasiado (máximo 5 MB).';
+    if (/mime|content.type/i.test(m)) return 'Formato de foto no admitido. Usa JPG, PNG o WebP.';
+    if (code === '23505' || /duplicate key/i.test(m)) return 'Ya existe un registro igual. Recarga la página e inténtalo otra vez.';
+    console.warn('[panel] error sin traducir:', code || '', m);
+    return 'No se ha podido completar la operación. Inténtalo otra vez en unos segundos y, si sigue fallando, avisa a soporte.';
   }
   /* Las escrituras bloqueadas por RLS no dan error: devuelven 0 filas. Lo tratamos como error. */
   async function escribir(q) {
     var r = await q.select('id');
     if (r.error) throw r.error;
-    if (!r.data || !r.data.length) throw new Error('No se ha guardado: sin permiso o la prenda ya no existe.');
+    if (!r.data || !r.data.length) {
+      var err = new Error('Sin permiso o la prenda ya no existe. Recarga la página.');
+      err.claro = true;
+      throw err;
+    }
     return r.data;
   }
   var ultimoTs = 0;
@@ -224,13 +242,24 @@
 
   $('nueva').addEventListener('click', function () { abrirForm(null); });
 
+  function ponerFiltro(f) {
+    filtroCat = f;
+    document.querySelectorAll('.filtro-cat button').forEach(function (o) { o.setAttribute('aria-pressed', o.getAttribute('data-f') === f ? 'true' : 'false'); });
+    pintarLista();
+  }
   document.querySelectorAll('.filtro-cat button').forEach(function (b) {
-    b.addEventListener('click', function () {
-      filtroCat = b.getAttribute('data-f');
-      document.querySelectorAll('.filtro-cat button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
-      pintarLista();
-    });
+    b.addEventListener('click', function () { ponerFiltro(b.getAttribute('data-f')); });
   });
+
+  /* Contadores de caracteres (nombre 80, descripción 600: los mismos límites que la BD). */
+  function contador(campo, salida) {
+    var max = campo.maxLength;
+    function act() { var n = campo.value.length; salida.textContent = n + '/' + max; salida.classList.toggle('limite', n >= max); }
+    campo.addEventListener('input', act);
+    return act;
+  }
+  var actNombre = contador($('p-nombre'), $('p-nombre-cuenta'));
+  var actDesc = contador($('p-desc'), $('p-desc-cuenta'));
 
   /* ───────── Formulario ───────── */
   function abrirForm(p) {
@@ -250,6 +279,7 @@
     $('p-precio').value = nueva ? '' : window.WM_formatEur(p.precio_eur).replace(/\./g, '');
     $('p-ia').checked = nueva ? false : !!p.fotos_ia;
     $('p-categoria').value = nueva ? 'camiseta' : catDe(p);
+    actNombre(); actDesc();
     $('p-msg').textContent = ''; $('p-fotos-msg').textContent = '';
 
     var colores = nueva ? [] : (p.colores || []);
@@ -395,7 +425,9 @@
     var nombre = $('p-nombre').value.trim();
     var precio = parsePrecio($('p-precio').value);
     if (!nombre) { msg.textContent = 'Falta el nombre.'; $('p-nombre').focus(); return; }
-    if (!(precio > 0) || precio > 100000) { msg.textContent = 'Escribe un precio válido, por ejemplo 24,90.'; $('p-precio').focus(); return; }
+    if (nombre.length > 80) { msg.textContent = 'El nombre no puede pasar de 80 caracteres.'; $('p-nombre').focus(); return; }
+    if ($('p-desc').value.trim().length > 600) { msg.textContent = 'La descripción no puede pasar de 600 caracteres.'; $('p-desc').focus(); return; }
+    if (!(precio >= 0.01) || precio > 9999.99) { msg.textContent = 'Escribe un precio entre 0,01 y 9.999,99 €, por ejemplo 24,90.'; $('p-precio').focus(); return; }
     var categoria = $('p-categoria').value;
     if (!CATEGORIAS[categoria]) { msg.textContent = 'Elige la categoría.'; $('p-categoria').focus(); return; }
 
@@ -447,6 +479,7 @@
     btn.disabled = false; btn.textContent = 'Guardar';
     var eraNueva = edicion.nueva;
     cerrarForm();
+    if (filtroCat && filtroCat !== categoria) ponerFiltro(categoria);   // que se vea lo que se acaba de guardar
     aviso(eraNueva ? 'Prenda creada (oculta)' : 'Cambios guardados');
     cargarLista();
   });

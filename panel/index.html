@@ -74,16 +74,18 @@
     <form id="f-prenda" novalidate>
       <label class="campo">
         <span>Nombre</span>
-        <input id="p-nombre" type="text" maxlength="120" required>
+        <input id="p-nombre" type="text" maxlength="80" required aria-describedby="p-nombre-cuenta">
+        <small id="p-nombre-cuenta" class="contador">0/80</small>
       </label>
       <label class="campo">
         <span>Descripción</span>
-        <textarea id="p-desc" rows="3" maxlength="1000"></textarea>
+        <textarea id="p-desc" rows="3" maxlength="600" aria-describedby="p-desc-cuenta"></textarea>
+        <small id="p-desc-cuenta" class="contador">0/600</small>
       </label>
       <label class="campo campo-precio">
         <span>Precio final con IVA (€)</span>
         <input id="p-precio" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" required aria-describedby="p-precio-ayuda">
-        <small id="p-precio-ayuda">Precio que paga el cliente.</small>
+        <small id="p-precio-ayuda">Precio que paga el cliente (de 0,01 € a 9.999,99 €).</small>
       </label>
       <label class="campo campo-cat">
         <span>Categoría</span>
