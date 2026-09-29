@@ -9,19 +9,23 @@
   var tpl = document.getElementById('tpl-prenda');
   var MUESTRAS = { blanco: '#f4f4f6', negro: '#111114' };
   var suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $tabs = Array.prototype.slice.call(document.querySelectorAll('.pestanas [role="tab"]'));
+  var $panel = document.getElementById('panel-cat');
+  var prendas = null;              // todas las activas (una sola petición); se filtra en el cliente
+  var cat = catDeHash() || 'camiseta';
 
   document.getElementById('anio').textContent = new Date().getFullYear();
 
   function cargar() {
     mostrarCargando();
     var url = C.supabaseUrl + '/rest/v1/' + C.tabla +
-      '?select=id,nombre,descripcion,precio_eur,colores,tallas,fotos,fotos_ia' +
+      '?select=id,nombre,descripcion,precio_eur,colores,tallas,fotos,fotos_ia,categoria' +
       '&activo=eq.true&order=orden.asc,created_at.asc';
     var ctrl = new AbortController();
     var t = setTimeout(function () { ctrl.abort(); }, 12000);
     fetch(url, { headers: { apikey: C.supabaseKey, Accept: 'application/json' }, signal: ctrl.signal })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-      .then(function (prendas) { clearTimeout(t); pintar(prendas); })
+      .then(function (datos) { clearTimeout(t); pintar(datos); })
       .catch(function (e) { clearTimeout(t); console.warn('[tienda] no se pudo cargar:', e.message); mostrarError(); });
   }
 
@@ -54,21 +58,93 @@
       'Puede ser un problema momentáneo de conexión. Prueba otra vez en unos segundos o escríbenos por WhatsApp al ' + C.whatsappVisible + '.', b);
   }
 
-  function pintar(prendas) {
-    if (!prendas.length) {
-      var a = document.createElement('a');
-      a.className = 'btn btn-ghost'; a.href = 'https://whitemoon.es/'; a.textContent = 'Ir a whitemoon.es';
-      mensaje('Pronto novedades', 'Estamos preparando las primeras prendas. Vuelve en unos días.', a);
+  /* Se pintan todas las tarjetas una vez; cambiar de pestaña solo las muestra u oculta
+     (así se conservan color y talla elegidos y no se vuelven a pedir las fotos). */
+  function pintar(datos) {
+    prendas = datos;
+    var frag = document.createDocumentFragment();
+    prendas.forEach(function (p, i) {
+      var li = tarjeta(p, i);
+      li.setAttribute('data-cat', p.categoria || 'camiseta');
+      frag.appendChild(li);
+    });
+    $rejilla.replaceChildren(frag);
+    $tabs.forEach(function (tab) {
+      var n = prendas.filter(function (p) { return (p.categoria || 'camiseta') === tab.dataset.cat; }).length;
+      tab.querySelector('.cuenta').textContent = '(' + n + ')';
+    });
+    if (prendas.length) jsonLd(prendas);
+    filtrar();
+  }
+
+  function filtrar() {
+    if (!prendas) return;
+    var visibles = 0;
+    Array.prototype.forEach.call($rejilla.children, function (li) {
+      var ok = li.getAttribute('data-cat') === cat;
+      li.hidden = !ok;
+      if (ok) visibles++;
+    });
+    if (visibles) {
+      $estado.hidden = true;
+      $estado.replaceChildren();
+      $rejilla.hidden = false;
       return;
     }
-    var frag = document.createDocumentFragment();
-    prendas.forEach(function (p, i) { frag.appendChild(tarjeta(p, i)); });
-    $rejilla.replaceChildren(frag);
-    $estado.hidden = true;
-    $estado.replaceChildren();
-    $rejilla.hidden = false;
-    jsonLd(prendas);
+    var otra = $tabs.filter(function (tab) { return tab.dataset.cat !== cat; })[0];
+    var hayOtra = prendas.some(function (p) { return (p.categoria || 'camiseta') === otra.dataset.cat; });
+    var b;
+    if (hayOtra) {
+      b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn btn-ghost';
+      b.textContent = 'Ver ' + otra.firstChild.textContent.trim().toLowerCase();
+      b.addEventListener('click', function () { activar(otra, true); });
+    } else {
+      b = document.createElement('a');
+      b.className = 'btn btn-ghost'; b.href = 'https://whitemoon.es/'; b.textContent = 'Ir a whitemoon.es';
+    }
+    mensaje('Pronto novedades', 'Estamos preparando las primeras prendas de esta sección. Vuelve en unos días.', b);
   }
+
+  /* ───── Pestañas (patrón WAI-ARIA con activación automática) ───── */
+  function catDeHash() {
+    var h = location.hash.replace('#', '');
+    return h === 'sudaderas' ? 'sudadera' : h === 'camisetas' ? 'camiseta' : null;
+  }
+  function activar(tab, foco) {
+    cat = tab.dataset.cat;
+    $tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
+    $panel.setAttribute('aria-labelledby', tab.id);
+    if (location.hash !== '#' + tab.dataset.hash) history.replaceState(null, '', '#' + tab.dataset.hash);
+    if (foco) tab.focus();
+    filtrar();
+  }
+  $tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { activar(tab, false); });
+    tab.addEventListener('keydown', function (e) {
+      var j = null;
+      if (e.key === 'ArrowRight') j = (i + 1) % $tabs.length;
+      else if (e.key === 'ArrowLeft') j = (i - 1 + $tabs.length) % $tabs.length;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = $tabs.length - 1;
+      if (j === null) return;
+      e.preventDefault();
+      activar($tabs[j], true);
+    });
+  });
+  window.addEventListener('hashchange', function () {
+    var c = catDeHash();
+    if (c && c !== cat) activar($tabs.filter(function (t) { return t.dataset.cat === c; })[0], false);
+  });
+  (function () {   // estado inicial según el hash, sin reescribir la URL si no hay hash
+    var tab = $tabs.filter(function (t) { return t.dataset.cat === cat; })[0];
+    $tabs.forEach(function (t) { var on = t === tab; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
+    $panel.setAttribute('aria-labelledby', tab.id);
+  })();
 
   function tarjeta(p, idx) {
     var li = tpl.content.firstElementChild.cloneNode(true);

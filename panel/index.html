@@ -56,6 +56,11 @@
       <h1 id="t-lista">Prendas</h1>
       <button id="nueva" class="btn btn-p" type="button">+ Nueva prenda</button>
     </div>
+    <div class="filtro-cat" role="group" aria-label="Filtrar por categoría">
+      <button type="button" data-f="" aria-pressed="true">Todas</button>
+      <button type="button" data-f="camiseta" aria-pressed="false">Camisetas</button>
+      <button type="button" data-f="sudadera" aria-pressed="false">Sudaderas</button>
+    </div>
     <p id="lista-estado" class="estado-lista" role="status"></p>
     <ul id="lista" class="lista"></ul>
   </section>
@@ -79,6 +84,13 @@
         <span>Precio final con IVA (€)</span>
         <input id="p-precio" type="text" inputmode="decimal" autocomplete="off" placeholder="0,00" required aria-describedby="p-precio-ayuda">
         <small id="p-precio-ayuda">Precio que paga el cliente.</small>
+      </label>
+      <label class="campo campo-cat">
+        <span>Categoría</span>
+        <select id="p-categoria" required>
+          <option value="camiseta">Camiseta</option>
+          <option value="sudadera">Sudadera</option>
+        </select>
       </label>
 
       <fieldset class="grupo">
@@ -129,7 +141,7 @@
     <div class="miniatura"></div>
     <div class="datos">
       <p class="f-nombre"></p>
-      <p class="f-meta"><span class="f-precio"></span><span class="f-estado"></span><span class="f-orden"></span></p>
+      <p class="f-meta"><span class="f-cat"></span><span class="f-precio"></span><span class="f-estado"></span><span class="f-orden"></span></p>
     </div>
     <div class="f-acciones">
       <button class="btn btn-ghost btn-sm a-editar" type="button">Editar</button>

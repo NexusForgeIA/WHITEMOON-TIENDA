@@ -16,6 +16,13 @@
 .modelos-fig img{display:block;width:100%;height:auto;border-radius:14px}
 .modelos-fig figcaption{margin-top:8px;font-size:.75rem;color:var(--muted)}
 
+/* Pestañas de categoría */
+.pestanas{display:inline-flex;gap:4px;padding:4px;margin-bottom:24px;border:1px solid var(--border-soft);border-radius:14px;background:var(--bg2);max-width:100%}
+.pestanas [role="tab"]{min-height:44px;padding:0 18px;border:0;border-radius:10px;background:transparent;color:var(--muted);font-weight:600;font-size:.95rem;cursor:pointer;white-space:nowrap;transition:background-color .2s var(--ease),color .2s var(--ease)}
+.pestanas [role="tab"]:hover{color:var(--text)}
+.pestanas [role="tab"][aria-selected="true"]{background:var(--p);color:#fff}
+.pestanas .cuenta{font-weight:400}
+
 /* Rejilla */
 .rejilla{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
 @media (min-width:601px){.rejilla,.skeleton{max-width:860px}}
