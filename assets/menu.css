@@ -1,0 +1,44 @@
+/* Menú fijo de la tienda (portada y /condiciones/). El panel usa su propia .top de base.css. */
+.nav{position:sticky;top:0;z-index:var(--z-sticky);background:rgba(8,8,13,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border-soft)}
+.nav::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--p) 25%,var(--g) 50%,#4db8ff 75%,transparent);opacity:.45}
+.nav-in{height:72px;display:flex;align-items:center;gap:24px}
+.nav .brand{margin-right:auto}
+.nav .brand img{height:52px}
+.nav-panel{display:flex;align-items:center;gap:22px}
+.nav-links{list-style:none;display:flex;align-items:center;gap:4px}
+.nav-links a{position:relative;display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border-radius:10px;color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;white-space:nowrap;transition:color .2s var(--ease),background-color .2s var(--ease)}
+.nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
+.nav-links a[aria-current]{color:var(--text)}
+.nav-links a::after{content:"";position:absolute;left:12px;right:12px;bottom:6px;height:2px;border-radius:2px;background:linear-gradient(90deg,var(--p2),var(--g),#4db8ff);transform:scaleX(0);transform-origin:0 50%;transition:transform .3s var(--ease)}
+.nav-links a[aria-current]::after{transform:scaleX(1)}
+.nav-cta{min-height:44px;padding:0 18px;font-size:.9rem;white-space:nowrap}
+.nav-cta svg,.btn svg{width:18px;height:18px;flex:none}
+.sprite{position:absolute;width:0;height:0;overflow:hidden}
+
+.nav-toggle{display:none;width:48px;height:48px;margin-right:-8px;border:0;border-radius:12px;background:transparent;cursor:pointer;place-items:center}
+.nav-toggle i,.nav-toggle i::before,.nav-toggle i::after{display:block;width:22px;height:2px;border-radius:2px;background:var(--text);transition:transform .25s var(--ease),opacity .2s}
+.nav-toggle i{position:relative}
+.nav-toggle i::before,.nav-toggle i::after{content:"";position:absolute;left:0}
+.nav-toggle i::before{transform:translateY(-7px)}
+.nav-toggle i::after{transform:translateY(7px)}
+.nav-toggle[aria-expanded="true"] i{background:transparent}
+.nav-toggle[aria-expanded="true"] i::before{transform:rotate(45deg)}
+.nav-toggle[aria-expanded="true"] i::after{transform:rotate(-45deg)}
+
+@media (max-width:900px){
+  .nav-toggle{display:grid}
+  .nav-panel{position:absolute;left:0;right:0;top:100%;flex-direction:column;align-items:stretch;gap:14px;padding:12px 22px 22px;
+    background:rgba(8,8,13,.97);border-bottom:1px solid var(--border);box-shadow:0 30px 60px -30px rgba(0,0,0,.9);
+    visibility:hidden;opacity:0;transform:translateY(-8px);transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s .2s}
+  .nav-panel.abierto{visibility:visible;opacity:1;transform:none;transition:opacity .2s var(--ease),transform .2s var(--ease),visibility 0s}
+  .nav-links{flex-direction:column;align-items:stretch;gap:2px}
+  .nav-links a{min-height:52px;font-size:1.05rem;padding:0 12px}
+  .nav-links a::after{left:12px;right:auto;width:28px;bottom:10px}
+  .nav-cta{min-height:52px;font-size:1rem}
+}
+@media (max-width:600px){
+  .nav-in{height:62px}
+  .nav .brand img{height:42px}
+  .nav-panel{padding:10px 16px 18px}
+}
+@media (prefers-reduced-motion:reduce){.nav-panel,.nav-links a::after,.nav-toggle i,.nav-toggle i::before,.nav-toggle i::after{transition:none!important}}

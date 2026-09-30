@@ -1,23 +1,31 @@
-/* Tienda pública: lee las prendas activas y pinta la rejilla.
+/* Tienda pública: lee las prendas activas y pinta una rejilla por categoría.
    Lectura directa a la API REST con la clave publishable (el RLS solo deja ver activo=true).
-   Nada de supabase-js aquí: la tienda no necesita sesión y así pesa ~200 KB menos. */
+   Nada de supabase-js aquí: la tienda no necesita sesión y así pesa ~200 KB menos.
+   Una sola petición: camisetas y sudaderas se reparten en el cliente. */
 (function () {
   'use strict';
   var C = window.WM_CONFIG;
-  var $estado = document.getElementById('estado');
-  var $rejilla = document.getElementById('rejilla');
   var tpl = document.getElementById('tpl-prenda');
-  var MUESTRAS = { blanco: '#f4f4f6', negro: '#111114' };
+  var MUESTRAS = { blanco: '#f4f4f6', negro: '#111' };
+  var OSCURAS = { negro: true };
   var suave = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var $tabs = Array.prototype.slice.call(document.querySelectorAll('.pestanas [role="tab"]'));
-  var $panel = document.getElementById('panel-cat');
-  var prendas = null;              // todas las activas (una sola petición); se filtra en el cliente
-  var cat = catDeHash() || 'camiseta';
+  var punteroFino = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var CATS = ['camiseta', 'sudadera'];
+  var NOMBRES = { camiseta: 'camisetas', sudadera: 'sudaderas' };
+  var $estado = {}, $rejilla = {};
+  CATS.forEach(function (c) {
+    $estado[c] = document.querySelector('[data-estado="' + c + '"]');
+    $rejilla[c] = document.querySelector('.rejilla[data-cat="' + c + '"]');
+  });
+  var tocado = false;   // si la persona ya ha hecho scroll, no le recolocamos la página
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (ev) {
+    window.addEventListener(ev, function () { tocado = true; }, { once: true, passive: true });
+  });
 
   document.getElementById('anio').textContent = new Date().getFullYear();
 
   function cargar() {
-    mostrarCargando();
+    CATS.forEach(mostrarCargando);
     var url = C.supabaseUrl + '/rest/v1/' + C.tabla +
       '?select=id,nombre,descripcion,precio_eur,colores,tallas,fotos,fotos_ia,categoria' +
       '&activo=eq.true&order=orden.asc,created_at.asc';
@@ -26,129 +34,65 @@
     fetch(url, { headers: { apikey: C.supabaseKey, Accept: 'application/json' }, signal: ctrl.signal })
       .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function (datos) { clearTimeout(t); pintar(datos); })
-      .catch(function (e) { clearTimeout(t); console.warn('[tienda] no se pudo cargar:', e.message); mostrarError(); });
+      .catch(function (e) { clearTimeout(t); console.warn('[tienda] no se pudo cargar:', e.message); CATS.forEach(mostrarError); });
   }
 
-  function mostrarCargando() {
-    $rejilla.hidden = true;
-    $estado.hidden = false;
-    $estado.replaceChildren();
+  function mostrarCargando(c) {
+    $rejilla[c].hidden = true;
+    $estado[c].hidden = false;
     var sk = document.createElement('div'); sk.className = 'skeleton'; sk.setAttribute('aria-hidden', 'true');
-    for (var i = 0; i < 3; i++) sk.appendChild(document.createElement('span'));
-    var sr = document.createElement('p'); sr.className = 'sr-only'; sr.textContent = 'Cargando prendas…';
-    $estado.append(sk, sr);
+    for (var i = 0; i < 4; i++) sk.appendChild(document.createElement('span'));
+    var sr = document.createElement('p'); sr.className = 'sr-only'; sr.textContent = 'Cargando ' + NOMBRES[c] + '…';
+    $estado[c].replaceChildren(sk, sr);
   }
 
-  function mensaje(titulo, texto, boton) {
-    $rejilla.hidden = true;
-    $estado.hidden = false;
-    var box = document.createElement('div'); box.className = 'mensaje';
-    var h = document.createElement('h3'); h.textContent = titulo;
-    var p = document.createElement('p'); p.textContent = texto;
-    box.append(h, p);
-    if (boton) box.appendChild(boton);
-    $estado.replaceChildren(box);
-  }
-
-  function mostrarError() {
+  function mostrarError(c) {
     var b = document.createElement('button');
     b.type = 'button'; b.className = 'btn btn-ghost'; b.textContent = 'Reintentar';
     b.addEventListener('click', cargar);
-    mensaje('No hemos podido cargar las prendas',
-      'Puede ser un problema momentáneo de conexión. Prueba otra vez en unos segundos o escríbenos por WhatsApp al ' + C.whatsappVisible + '.', b);
+    var box = document.createElement('div'); box.className = 'mensaje';
+    var h = document.createElement('h3'); h.textContent = 'No hemos podido cargar las ' + NOMBRES[c];
+    var p = document.createElement('p');
+    p.textContent = 'Puede ser un problema momentáneo de conexión. Prueba otra vez en unos segundos o escríbenos por WhatsApp al ' + C.whatsappVisible + '.';
+    box.append(h, p, b);
+    $rejilla[c].hidden = true;
+    $estado[c].hidden = false;
+    $estado[c].replaceChildren(box);
   }
 
-  /* Se pintan todas las tarjetas una vez; cambiar de pestaña solo las muestra u oculta
-     (así se conservan color y talla elegidos y no se vuelven a pedir las fotos). */
-  function pintar(datos) {
-    prendas = datos;
-    var frag = document.createDocumentFragment();
-    prendas.forEach(function (p, i) {
-      var li = tarjeta(p, i);
-      li.setAttribute('data-cat', p.categoria || 'camiseta');
-      frag.appendChild(li);
-    });
-    $rejilla.replaceChildren(frag);
-    $tabs.forEach(function (tab) {
-      var n = prendas.filter(function (p) { return (p.categoria || 'camiseta') === tab.dataset.cat; }).length;
-      tab.querySelector('.cuenta').textContent = '(' + n + ')';
+  function proximamente(c) {
+    var box = document.createElement('div'); box.className = 'pronto';
+    var h = document.createElement('h3'); h.className = 'holo'; h.textContent = 'Próximamente';
+    var p = document.createElement('p'); p.textContent = 'Estamos preparando las ' + NOMBRES[c] + '. Si quieres, te avisamos por WhatsApp cuando lleguen.';
+    var a = document.createElement('a');
+    a.className = 'btn btn-wa-p btn-lg'; a.target = '_blank'; a.rel = 'noopener';
+    a.href = 'https://wa.me/' + C.whatsapp + '?text=' + encodeURIComponent('Hola, avisadme cuando estén las ' + NOMBRES[c] + ' de WhiteMoon');
+    a.textContent = 'Avísame por WhatsApp cuando lleguen';
+    box.append(h, p, a);
+    $estado[c].hidden = false;
+    $estado[c].replaceChildren(box);
+    efectoEnPantalla(box);
+  }
+
+  function pintar(prendas) {
+    var idx = 0;
+    CATS.forEach(function (c) {
+      var lista = prendas.filter(function (p) { return (p.categoria || 'camiseta') === c; });
+      $rejilla[c].replaceChildren();
+      if (!lista.length) { $rejilla[c].hidden = true; proximamente(c); return; }
+      var frag = document.createDocumentFragment();
+      lista.forEach(function (p) { frag.appendChild(tarjeta(p, idx++)); });
+      $rejilla[c].appendChild(frag);
+      $estado[c].hidden = true;
+      $estado[c].replaceChildren();
+      $rejilla[c].hidden = false;
+      Array.prototype.forEach.call($rejilla[c].children, revelar);
     });
     if (prendas.length) jsonLd(prendas);
-    filtrar();
+    // Enlace directo (#sudaderas…): las rejillas de arriba han crecido, se vuelve a colocar la sección.
+    var destino = location.hash && document.getElementById(location.hash.slice(1));
+    if (destino && !tocado) destino.scrollIntoView({ block: 'start' });
   }
-
-  function filtrar() {
-    if (!prendas) return;
-    var visibles = 0;
-    Array.prototype.forEach.call($rejilla.children, function (li) {
-      var ok = li.getAttribute('data-cat') === cat;
-      li.hidden = !ok;
-      if (ok) visibles++;
-    });
-    if (visibles) {
-      $estado.hidden = true;
-      $estado.replaceChildren();
-      $rejilla.hidden = false;
-      return;
-    }
-    var otra = $tabs.filter(function (tab) { return tab.dataset.cat !== cat; })[0];
-    var hayOtra = prendas.some(function (p) { return (p.categoria || 'camiseta') === otra.dataset.cat; });
-    var b;
-    if (hayOtra) {
-      b = document.createElement('button');
-      b.type = 'button'; b.className = 'btn btn-ghost';
-      b.textContent = 'Ver ' + otra.firstChild.textContent.trim().toLowerCase();
-      b.addEventListener('click', function () { activar(otra, true); });
-    } else {
-      b = document.createElement('a');
-      b.className = 'btn btn-ghost'; b.href = 'https://whitemoon.es/'; b.textContent = 'Ir a whitemoon.es';
-    }
-    mensaje('Pronto novedades', 'Estamos preparando las primeras prendas de esta sección. Vuelve en unos días.', b);
-  }
-
-  /* ───── Pestañas (patrón WAI-ARIA con activación automática) ───── */
-  function catDeHash() {
-    var h = location.hash.replace('#', '');
-    return h === 'sudaderas' ? 'sudadera' : h === 'camisetas' ? 'camiseta' : null;
-  }
-  function activar(tab, foco) {
-    cat = tab.dataset.cat;
-    $tabs.forEach(function (t) {
-      var on = t === tab;
-      t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.tabIndex = on ? 0 : -1;
-    });
-    $panel.setAttribute('aria-labelledby', tab.id);
-    if (location.hash !== '#' + tab.dataset.hash) history.replaceState(null, '', '#' + tab.dataset.hash);
-    if (foco) tab.focus();
-    filtrar();
-  }
-  $tabs.forEach(function (tab, i) {
-    tab.addEventListener('click', function () { activar(tab, false); });
-    tab.addEventListener('keydown', function (e) {
-      var j = null;
-      if (e.key === 'ArrowRight') j = (i + 1) % $tabs.length;
-      else if (e.key === 'ArrowLeft') j = (i - 1 + $tabs.length) % $tabs.length;
-      else if (e.key === 'Home') j = 0;
-      else if (e.key === 'End') j = $tabs.length - 1;
-      if (j === null) return;
-      e.preventDefault();
-      activar($tabs[j], true);
-    });
-  });
-  window.addEventListener('hashchange', function () {
-    var c = catDeHash();
-    if (c && c !== cat) activar($tabs.filter(function (t) { return t.dataset.cat === c; })[0], false);
-  });
-  (function () {   // estado inicial según el hash, sin reescribir la URL si no hay hash
-    var tab = $tabs.filter(function (t) { return t.dataset.cat === cat; })[0];
-    $tabs.forEach(function (t) { var on = t === tab; t.setAttribute('aria-selected', on ? 'true' : 'false'); t.tabIndex = on ? 0 : -1; });
-    $panel.setAttribute('aria-labelledby', tab.id);
-    // Enlace directo (#camisetas / #sudaderas): además de activar la pestaña, baja al catálogo.
-    if (catDeHash()) requestAnimationFrame(function () {
-      document.getElementById('catalogo').scrollIntoView({ behavior: suave ? 'smooth' : 'auto', block: 'start' });
-    });
-  })();
 
   function tarjeta(p, idx) {
     var li = tpl.content.firstElementChild.cloneNode(true);
@@ -164,12 +108,14 @@
 
     var sel = { color: null, talla: null };
     var colores = p.colores || [], tallas = p.tallas || [];
+    var $elegido = li.querySelector('.elegido');
     opciones(li.querySelector('.op-color'), colores, 'c-' + p.id, 'color', sel, true);
     opciones(li.querySelector('.op-talla'), tallas, 't-' + p.id, 'talla', sel, false);
 
     var btn = li.querySelector('.btn-wa');
     var aviso = li.querySelector('.aviso-sel');
     function actualizar() {
+      $elegido.textContent = sel.color || '';
       var faltaColor = colores.length && !sel.color;
       var faltaTalla = tallas.length && !sel.talla;
       if (faltaColor || faltaTalla) {
@@ -189,10 +135,11 @@
     li.addEventListener('change', actualizar);
     btn.addEventListener('click', function (e) { if (btn.getAttribute('aria-disabled') === 'true') e.preventDefault(); });
     actualizar();
+    brilloPuntero(li);
     return li;
   }
 
-  function opciones(fs, valores, prefijo, clave, sel, conMuestra) {
+  function opciones(fs, valores, prefijo, clave, sel, esColor) {
     if (!valores.length) return;
     fs.hidden = false;
     var cont = fs.querySelector('.chips');
@@ -201,12 +148,18 @@
       var inp = document.createElement('input');
       inp.type = 'radio'; inp.name = prefijo; inp.value = v; inp.id = prefijo + '-' + i;
       var sp = document.createElement('span');
-      var m = MUESTRAS[String(v).trim().toLowerCase()];
-      if (conMuestra && m) {
-        var dot = document.createElement('i'); dot.className = 'muestra'; dot.style.background = m;
-        dot.setAttribute('aria-hidden', 'true'); sp.appendChild(dot);
+      var k = String(v).trim().toLowerCase();
+      var m = esColor && MUESTRAS[k];
+      if (m) {
+        // Bolita del color real; el nombre queda para lectores de pantalla y como tooltip.
+        lab.classList.add('chip-color'); lab.title = v;
+        var dot = document.createElement('i'); dot.className = 'muestra' + (OSCURAS[k] ? ' oscura' : '');
+        dot.style.background = m; dot.setAttribute('aria-hidden', 'true');
+        var nom = document.createElement('span'); nom.className = 'sr-only'; nom.textContent = v;
+        sp.append(dot, nom);
+      } else {
+        sp.textContent = v;
       }
-      sp.appendChild(document.createTextNode(v));
       inp.addEventListener('change', function () { if (inp.checked) sel[clave] = v; });
       lab.append(inp, sp);
       cont.appendChild(lab);
@@ -228,7 +181,7 @@
       img.width = 1000; img.height = 1000;
       img.alt = nombre + (fotos.length > 1 ? ' · foto ' + (i + 1) + ' de ' + fotos.length : '');
       img.decoding = 'async';
-      if (!(prioritaria && i === 0)) img.loading = 'lazy'; // la prioridad alta es solo para la imagen de portada
+      if (!(prioritaria && i === 0)) img.loading = 'lazy'; // solo la primera foto del catálogo va sin lazy
       pista.appendChild(img);
     });
     if (fotos.length < 2) { pista.removeAttribute('tabindex'); return; }
@@ -273,6 +226,7 @@
         if (p.descripcion) prod.description = p.descripcion;
         if (p.fotos && p.fotos.length) prod.image = p.fotos.map(window.WM_fotoUrl);
         if (p.colores && p.colores.length) prod.color = p.colores.join(', ');
+        if (p.categoria) prod.category = p.categoria === 'sudadera' ? 'Sudaderas' : 'Camisetas';
         return { '@type': 'ListItem', position: i + 1, item: prod };
       })
     };
@@ -281,6 +235,92 @@
     s.textContent = JSON.stringify(data).replace(/</g, '\\u003c');
     if (!s.parentNode) document.head.appendChild(s);
   }
+
+  /* ───── Efectos (nada de esto es necesario para ver o comprar) ───── */
+  var io = 'IntersectionObserver' in window;
+
+  /* Animaciones continuas solo mientras el bloque está en pantalla (.on). */
+  var ioOn = io && suave ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) { e.target.classList.toggle('on', e.isIntersecting); });
+  }, { rootMargin: '80px' }) : null;
+  function efectoEnPantalla(el) { if (ioOn) ioOn.observe(el); }
+  document.querySelectorAll('.fx,.cta-final').forEach(efectoEnPantalla);
+
+  /* Aparición: todo empieza visible. Solo se anima lo que aún está por debajo de la pantalla,
+     y se dispara antes de que asome, así nunca hay nada oculto esperando. */
+  var ioRv = io && suave ? new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add('rv-in');
+      ioRv.unobserve(e.target);
+    });
+  }, { rootMargin: '0px 0px 12% 0px' }) : null;
+  function revelar(el) {
+    if (!ioRv) return;
+    if (el.getBoundingClientRect().top < window.innerHeight * 1.1) return; // ya visible o a punto: se deja quieto
+    ioRv.observe(el);
+  }
+  document.querySelectorAll('.rv').forEach(revelar);
+
+  /* Brillo holográfico que sigue al puntero en las tarjetas. */
+  function brilloPuntero(li) {
+    var raf = 0, x = 0, y = 0;
+    li.addEventListener('pointermove', function (e) {
+      if (!punteroFino.matches) return;
+      var r = li.getBoundingClientRect();
+      x = e.clientX - r.left; y = e.clientY - r.top;
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        li.style.setProperty('--mx', x + 'px');
+        li.style.setProperty('--my', y + 'px');
+      });
+    });
+  }
+
+  /* Giro 3D de la luna con el puntero: solo escritorio con puntero fino y sin movimiento reducido. */
+  (function () {
+    var luna = document.getElementById('luna');
+    var hero = luna && luna.closest('.hero');
+    var escritorio = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 901px)');
+    if (!hero || !suave) return;
+    var raf = 0, px = 0, py = 0;
+    hero.addEventListener('pointermove', function (e) {
+      if (!escritorio.matches) return;
+      var r = luna.getBoundingClientRect();
+      px = (e.clientX - (r.left + r.width / 2)) / window.innerWidth;
+      py = (e.clientY - (r.top + r.height / 2)) / window.innerHeight;
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        luna.style.setProperty('--ry', (Math.max(-1, Math.min(1, px)) * 16).toFixed(2) + 'deg');
+        luna.style.setProperty('--rx', (Math.max(-1, Math.min(1, py)) * -14).toFixed(2) + 'deg');
+      });
+    });
+    hero.addEventListener('pointerleave', function () {
+      luna.style.setProperty('--rx', '0deg');
+      luna.style.setProperty('--ry', '0deg');
+    });
+  })();
+
+  /* Parallax suave de la foto de modelos (solo transform, solo mientras se ve). */
+  (function () {
+    var marco = document.getElementById('parallax');
+    if (!marco || !suave || !io) return;
+    marco.classList.add('plx');
+    var visible = false, raf = 0;
+    function mover() {
+      raf = 0;
+      var r = marco.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var t = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2); // -1 … 1
+      marco.style.setProperty('--plx', (Math.max(-1, Math.min(1, t)) * r.height * 0.035).toFixed(1) + 'px');
+    }
+    function pedir() { if (visible && !raf) raf = requestAnimationFrame(mover); }
+    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; pedir(); }).observe(marco);
+    window.addEventListener('scroll', pedir, { passive: true });
+    window.addEventListener('resize', pedir, { passive: true });
+  })();
 
   cargar();
 })();

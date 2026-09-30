@@ -44,6 +44,10 @@ window.WM_CONFIG = Object.freeze({
     });
     document.querySelectorAll('[data-cfg-href="email"]').forEach(function (a) { a.href = 'mailto:' + C.email; });
     document.querySelectorAll('[data-cfg-href="whatsapp"]').forEach(function (a) { a.href = 'https://wa.me/' + C.whatsapp; });
+    /* Enlaces de WhatsApp con mensaje ya escrito: data-cfg-wa="texto del mensaje" */
+    document.querySelectorAll('[data-cfg-wa]').forEach(function (a) {
+      a.href = 'https://wa.me/' + C.whatsapp + '?text=' + encodeURIComponent(a.getAttribute('data-cfg-wa'));
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', rellenar);
   else rellenar();

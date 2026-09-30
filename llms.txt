@@ -1,13 +1,31 @@
 # Merch WhiteMoon
 
-> Tienda oficial de camisetas y sudaderas de WhiteMoon (agencia de IA de Majadahonda, Madrid). Los pedidos se hacen por WhatsApp.
+> Tienda oficial de camisetas y sudaderas de WhiteMoon (agencia de IA de Majadahonda, Madrid). Los pedidos se hacen por WhatsApp; no hay carrito ni registro.
 
-- Tienda: https://tienda.whitemoon.es/
-- Condiciones de venta: https://tienda.whitemoon.es/condiciones/
-- Web principal de WhiteMoon: https://whitemoon.es/
+- [Tienda](https://tienda.whitemoon.es/)
+- [Camisetas](https://tienda.whitemoon.es/#camisetas)
+- [Sudaderas](https://tienda.whitemoon.es/#sudaderas)
+- [Cómo comprar](https://tienda.whitemoon.es/#como-comprar)
+- [Envíos y devoluciones (preguntas frecuentes)](https://tienda.whitemoon.es/#faq)
+- [Condiciones de venta](https://tienda.whitemoon.es/condiciones/)
+- [Web principal de WhiteMoon](https://whitemoon.es/)
 
 ## Cómo se compra
 
-Se elige prenda, color y talla en la tienda y se pide por WhatsApp. Confirmamos el pedido por WhatsApp y se paga por transferencia bancaria; el envío se prepara al recibir el pago. El precio que aparece en cada prenda es el precio final con IVA incluido; el envío se suma aparte. Se envía a España peninsular. El plazo, el coste de envío, el derecho de desistimiento y la garantía están en las condiciones de venta.
+1. Se elige prenda, color y talla en la tienda.
+2. Se pide por WhatsApp: se abre un mensaje con el pedido ya escrito.
+3. Confirmamos el pedido por WhatsApp y se paga por transferencia bancaria; el envío se prepara al recibir el pago y llega en 5-7 días laborables desde el pago.
+
+## Envíos y devoluciones
+
+- El precio de cada prenda es el precio final con IVA incluido. El envío se suma aparte: 4,95 €.
+- Se envía a España peninsular.
+- Devolución: 14 días naturales desde que se recibe la prenda, sin dar explicaciones. Los gastos de enviar la devolución corren a cargo del comprador; se reembolsa el precio y el envío original por transferencia.
+- Cambio de talla: se tramita como devolución más un pedido nuevo, o se consulta antes por WhatsApp.
+- Garantía legal de conformidad de 3 años desde la entrega.
+
+Los detalles completos están en las [condiciones de venta](https://tienda.whitemoon.es/condiciones/).
+
+Algunas fotos de producto muestran modelos generados con IA: las personas no son reales, las prendas sí.
 
 Contacto: comercial@whitemoon.es · WhatsApp +34 643 199 580
