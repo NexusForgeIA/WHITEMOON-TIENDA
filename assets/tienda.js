@@ -41,7 +41,7 @@
     $rejilla[c].hidden = true;
     $estado[c].hidden = false;
     var sk = document.createElement('div'); sk.className = 'skeleton'; sk.setAttribute('aria-hidden', 'true');
-    for (var i = 0; i < 2; i++) sk.appendChild(document.createElement('span'));
+    for (var i = 0; i < 4; i++) sk.appendChild(document.createElement('span'));
     var sr = document.createElement('p'); sr.className = 'sr-only'; sr.textContent = 'Cargando ' + NOMBRES[c] + '…';
     $estado[c].replaceChildren(sk, sr);
   }
